@@ -1,15 +1,17 @@
-이전 시간 남은 문제******************************
-    -HTTP 요청을 구분하고 깊이를 표현하기 위해서 TraceId 동기화가 필요하다.
-    -TraceId 의 동기화를 위해서 관련 메서드의 모든 파라미터를 수정해야 한다.
-        -만약 인터페이스가 있다면 인터페이스까지 모두 고쳐야 하는 상황이다.
-    -로그를 처음 시작할 때는 begin() 을 호출하고, 처음이 아닐때는 beginSync() 를 호출해야 한다.
-        -만약에 컨트롤러를 통해서 서비스를 호출하는 것이 아니라, 다른 곳에서 서비스를 처음으로 호출하는 상황이라면 파리미터로 넘길 TraceId 가 없다.
+동시성 문제
+새로고침을 빠르게 여러번 하게 되면,
+스레드에 동시 접근해서 tranceId 구분되지 않고, level도 많이 꼬여있다.
 
-    Q.HTTP 요청을 구분하고 깊이를 표현하기 위해서 TraceId 를 파라미터로 넘기는 것 말고 다른 대안은 없을까?
-
-
-- 앞서 로그 추적기를 만들면서 다음 로그를 출력할 때 트랜잭션ID 와 level 을 동기화 하는 문제가 있었다.
-- 이 문제를 해결하기 위해 TraceId 를 파라미터로 넘기도록 구현했다.
-- 이렇게 해서 동기화는 성공했지만, 로그를 출력하는 모든 메서드에 TraceId 파라미터를 추가해야 하는 문제가 발생했다.
-
- Q.TraceId 를 파라미터로 넘기지 않고 이 문제를 해결할 수 있는 방법은 없을까?
+ex)
+2024-03-25T14:10:03.192+09:00  INFO 12904 --- [advanced] [o-12345-exec-10] h.advanced.trace.logtrace.FieldLogTrace  : [f0158145] OrderController.request()
+2024-03-25T14:10:03.192+09:00  INFO 12904 --- [advanced] [o-12345-exec-10] h.advanced.trace.logtrace.FieldLogTrace  : [f0158145] |-->OrderService.orderItem()
+2024-03-25T14:10:03.192+09:00  INFO 12904 --- [advanced] [o-12345-exec-10] h.advanced.trace.logtrace.FieldLogTrace  : [f0158145] | |-->OrderRepository.save()
+2024-03-25T14:10:03.371+09:00  INFO 12904 --- [advanced] [io-12345-exec-1] h.advanced.trace.logtrace.FieldLogTrace  : [f0158145] | | |-->OrderController.request()
+2024-03-25T14:10:03.373+09:00  INFO 12904 --- [advanced] [io-12345-exec-1] h.advanced.trace.logtrace.FieldLogTrace  : [f0158145] | | | |-->OrderService.orderItem()
+2024-03-25T14:10:03.373+09:00  INFO 12904 --- [advanced] [io-12345-exec-1] h.advanced.trace.logtrace.FieldLogTrace  : [f0158145] | | | | |-->OrderRepository.save()
+2024-03-25T14:10:04.203+09:00  INFO 12904 --- [advanced] [o-12345-exec-10] h.advanced.trace.logtrace.FieldLogTrace  : [f0158145] | |<--OrderRepository.save() time=1011ms
+2024-03-25T14:10:04.203+09:00  INFO 12904 --- [advanced] [o-12345-exec-10] h.advanced.trace.logtrace.FieldLogTrace  : [f0158145] |<--OrderService.orderItem() time=1011ms
+2024-03-25T14:10:04.203+09:00  INFO 12904 --- [advanced] [o-12345-exec-10] h.advanced.trace.logtrace.FieldLogTrace  : [f0158145] OrderController.request() time=1011ms
+2024-03-25T14:10:04.374+09:00  INFO 12904 --- [advanced] [io-12345-exec-1] h.advanced.trace.logtrace.FieldLogTrace  : [f0158145] | | | | |<--OrderRepository.save() time=1001ms
+2024-03-25T14:10:04.374+09:00  INFO 12904 --- [advanced] [io-12345-exec-1] h.advanced.trace.logtrace.FieldLogTrace  : [f0158145] | | | |<--OrderService.orderItem() time=1001ms
+2024-03-25T14:10:04.374+09:00  INFO 12904 --- [advanced] [io-12345-exec-1] h.advanced.trace.logtrace.FieldLogTrace  : [f0158145] | | |<--OrderController.request() time=1003ms
