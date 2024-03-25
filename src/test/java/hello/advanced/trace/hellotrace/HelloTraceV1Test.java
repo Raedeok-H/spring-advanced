@@ -1,9 +1,7 @@
-package hello.advanced.trace.helloTraceV1;
+package hello.advanced.trace.hellotrace;
 
 import hello.advanced.trace.TraceStatus;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class HelloTraceV1Test {
     // Assertions를 사용하지 않고 눈으로 확인하는 테스트 코드는 올바른 작성법이 아님.
