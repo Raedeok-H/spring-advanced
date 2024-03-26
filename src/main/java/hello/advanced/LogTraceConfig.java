@@ -1,7 +1,7 @@
 package hello.advanced;
 
-import hello.advanced.trace.logtrace.FieldLogTrace;
 import hello.advanced.trace.logtrace.LogTrace;
+import hello.advanced.trace.logtrace.ThreadLocalLogTrace;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -10,6 +10,6 @@ public class LogTraceConfig {
 
     @Bean
     public LogTrace logTrace() {
-        return new FieldLogTrace(); //싱글톤으로 인스턴스 빈 등록
+        return new ThreadLocalLogTrace(); //인스턴스에 의존했기 때문에 새로운 구현체로 변경이 쉬움.
     }
 }
