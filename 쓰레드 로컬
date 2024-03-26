@@ -1,17 +1,4 @@
-동시성 문제
-새로고침을 빠르게 여러번 하게 되면,
-스레드에 동시 접근해서 tranceId 구분되지 않고, level도 많이 꼬여있다.
+일반적인 변수 필드와 다르게, 쓰레드 로컬을 사용하면 각 쓰레드마다 별도의 내부 저장소를 제공한다.
+따라서 같은 인스턴스의 쓰레드 로컬 필드에 접근해도 문제 없다.
 
-ex)
-2024-03-25T14:10:03.192+09:00  INFO 12904 --- [advanced] [o-12345-exec-10] h.advanced.trace.logtrace.FieldLogTrace  : [f0158145] OrderController.request()
-2024-03-25T14:10:03.192+09:00  INFO 12904 --- [advanced] [o-12345-exec-10] h.advanced.trace.logtrace.FieldLogTrace  : [f0158145] |-->OrderService.orderItem()
-2024-03-25T14:10:03.192+09:00  INFO 12904 --- [advanced] [o-12345-exec-10] h.advanced.trace.logtrace.FieldLogTrace  : [f0158145] | |-->OrderRepository.save()
-2024-03-25T14:10:03.371+09:00  INFO 12904 --- [advanced] [io-12345-exec-1] h.advanced.trace.logtrace.FieldLogTrace  : [f0158145] | | |-->OrderController.request()
-2024-03-25T14:10:03.373+09:00  INFO 12904 --- [advanced] [io-12345-exec-1] h.advanced.trace.logtrace.FieldLogTrace  : [f0158145] | | | |-->OrderService.orderItem()
-2024-03-25T14:10:03.373+09:00  INFO 12904 --- [advanced] [io-12345-exec-1] h.advanced.trace.logtrace.FieldLogTrace  : [f0158145] | | | | |-->OrderRepository.save()
-2024-03-25T14:10:04.203+09:00  INFO 12904 --- [advanced] [o-12345-exec-10] h.advanced.trace.logtrace.FieldLogTrace  : [f0158145] | |<--OrderRepository.save() time=1011ms
-2024-03-25T14:10:04.203+09:00  INFO 12904 --- [advanced] [o-12345-exec-10] h.advanced.trace.logtrace.FieldLogTrace  : [f0158145] |<--OrderService.orderItem() time=1011ms
-2024-03-25T14:10:04.203+09:00  INFO 12904 --- [advanced] [o-12345-exec-10] h.advanced.trace.logtrace.FieldLogTrace  : [f0158145] OrderController.request() time=1011ms
-2024-03-25T14:10:04.374+09:00  INFO 12904 --- [advanced] [io-12345-exec-1] h.advanced.trace.logtrace.FieldLogTrace  : [f0158145] | | | | |<--OrderRepository.save() time=1001ms
-2024-03-25T14:10:04.374+09:00  INFO 12904 --- [advanced] [io-12345-exec-1] h.advanced.trace.logtrace.FieldLogTrace  : [f0158145] | | | |<--OrderService.orderItem() time=1001ms
-2024-03-25T14:10:04.374+09:00  INFO 12904 --- [advanced] [io-12345-exec-1] h.advanced.trace.logtrace.FieldLogTrace  : [f0158145] | | |<--OrderController.request() time=1003ms
+자바는 언어차원에서 쓰레드 로컬을 지원하기 위한 java.lang.ThreadLocal 클래스를 제공한다.
