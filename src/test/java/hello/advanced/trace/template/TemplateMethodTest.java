@@ -45,4 +45,26 @@ public class TemplateMethodTest {
         AbstractTemplate template2 = new SubClassLogic2();
         template2.execute();
     }
+
+    @Test
+    void templateMethodV2() {
+        AbstractTemplate template1 = new AbstractTemplate() {
+            @Override
+            protected void call() {
+                log.info("비즈니스 로직1 실행");
+            }
+        };
+        log.info("클래스 이름1={}", template1.getClass()); // 클래스 이름1=class hello.advanced.trace.template.TemplateMethodTest$1
+        template1.execute();
+
+        AbstractTemplate template2 = new AbstractTemplate() {
+            @Override
+            protected void call() {
+                log.info("비즈니스 로직2 실행"); //클래스 이름2=class hello.advanced.trace.template.TemplateMethodTest$2
+                                              // 클래스 이름$(숫자) 형태로 임의로 만들어짐.
+            }
+        };
+        log.info("클래스 이름2s={}", template2.getClass());
+        template2.execute();
+    }
 }
